@@ -1,0 +1,51 @@
+import { Product } from '../types/index.ts';
+import { parseCsv, normalizeSheetRows } from '../utils/sheets.ts';
+
+/**
+ * Exact Tapo inventory dataset from /public/assets/src/products.csv
+ */
+export const TAPO_INVENTORY_CSV = `Category,Sub-Category,Brand,Model / Product Description,Key Specifications,Unit Price,Image
+Smart Home,Power & Lighting,TP-Link,Tapo A200,Solar Panel,129,https://drive.google.com/file/d/1eT261_RbRXLkTbmm-svQsvjxJBBvfqgS/view?usp=sharing
+CCTV & Security,Outdoor Cameras,TP-Link,Tapo C120,2K 4MP Starlight Color,159,https://drive.google.com/file/d/1mGDdE3EJM8WBhzV6j0rRHw0HhGhHVayi/view?usp=drive_link
+CCTV & Security,Indoor Cameras,TP-Link,Tapo C210,1296P 3MP Pan/Tilt Camera,95,https://drive.google.com/file/d/1woxy-OTkZ1hEDAvuLUuSg4mTNzDsRV3X/view?usp=sharing
+CCTV & Security,Indoor Cameras,TP-Link,Tapo C212,2K 3MP w/ Ethernet Port,130,https://drive.google.com/file/d/1uwkiNr0p27u5xLe4-rlBwOfQx87yh8CB/view?usp=sharing
+CCTV & Security,Indoor Cameras,TP-Link,Tapo C216,2K 3MP Pan/Tilt,145,https://drive.google.com/file/d/1hFDaTsolkHYeJ_-ph3vt0dPMoQRjjDq0/view?usp=sharing
+CCTV & Security,Indoor/Outdoor Pan-Tilt,TP-Link,Tapo C220,2K 4MP Pan/Tilt,139,https://drive.google.com/file/d/1iy4Wb-e35rRhA-EVP4fUMLWFWWqZNMbv/view?usp=sharing
+CCTV & Security,Indoor Cameras,TP-Link,Tapo C230,5MP Pan/Tilt,149,https://drive.google.com/file/d/1NQhYjNoHm7o1nlZEbmr7J4ixfjulf_dA/view?usp=sharing
+CCTV & Security,Indoor/Outdoor Pan-Tilt,TP-Link,Tapo C245D,2K 3MP Dual Lens Pan/Tilt,199,https://drive.google.com/file/d/1DPDx5YFUVMkOTZ2_HMPx5oNI8pIwk-FY/view?usp=sharing
+CCTV & Security,Indoor/Outdoor Pan-Tilt,TP-Link,Tapo C246D,3MP Dual Lens,219,https://drive.google.com/file/d/12zruPP3UtXJVagP6GKv3mhSampglQp_O/view?usp=sharing
+CCTV & Security,Indoor Cameras,TP-Link,Tapo C260,4K 8MP Face Recognition,239,https://drive.google.com/file/d/1XCuEsntLrrQrCZMiPDkSA7E5wHBPuCaO/view?usp=sharing
+CCTV & Security,Outdoor Cameras,TP-Link,Tapo C310,2K 3MP Outdoor Wi-Fi Camera,169,https://drive.google.com/file/d/15s-xsJt1Ljw5VkczTQ9_OWYOkPpGWO_7/view?usp=sharing
+CCTV & Security,Outdoor Cameras,TP-Link,Tapo C320WS,2K 4MP Outdoor Wi-Fi Camera,239,https://drive.google.com/file/d/1kF5NgwXj-GSUTwc8BwkEdru5HQxfHBIU/view?usp=sharing
+CCTV & Security,Outdoor Cameras,TP-Link,Tapo C325WB,2K QHD Outdoor,289,https://drive.google.com/file/d/1ck-JrkOSn3nptrOTk9_RD4msUhS4deFt/view?usp=sharing
+CCTV & Security,Solar / Battery,TP-Link,Tapo C400,Battery-Powered Outdoor Camera,229,https://drive.google.com/file/d/1t3rrNZKR3hNbnDRFYQqvTcGa-SySVzM7/view?usp=sharing
+CCTV & Security,Solar / Battery,TP-Link,Tapo C400 Kit,Solar Powered Security Camera Kit,219,https://drive.google.com/file/d/1h8rLqAEeVoyQfKmb5VLyqXnVDSKh7ors/view?usp=sharing
+CCTV & Security,Solar / Battery,TP-Link,Tapo C410 Kit,2K 3MP Solar Powered Camera Kit,299,https://drive.google.com/file/d/1h8rLqAEeVoyQfKmb5VLyqXnVDSKh7ors/view?usp=sharing
+CCTV & Security,Outdoor Cameras,TP-Link,Tapo C425,Smart Wire-Free,299,https://drive.google.com/file/d/1toIbL4dvoVP7gEII-LqL-NZq4Ne-1Az0/view?usp=sharing
+CCTV & Security,Outdoor Cameras,TP-Link,Tapo C500,1080P 2MP Outdoor Pan/Tilt,159,https://drive.google.com/file/d/17DkwMtkxI8L0ZQZANmgZV87KebOf4R4N/view?usp=sharing
+CCTV & Security,Outdoor Cameras,TP-Link,Tapo C501GW,4G Outdoor Pan/Tilt LTE,299,https://drive.google.com/file/d/1uOZqftecbXfFK0zuQLh1NAwPW73fuxF5/view?usp=sharing
+CCTV & Security,Outdoor Cameras,TP-Link,Tapo C510W,Outdoor 2K 3MP Color Night Vision,179,https://drive.google.com/file/d/1aW2s15eEDENzXCYPu2rFjKj99b7ePUP-/view?usp=sharing
+CCTV & Security,Outdoor Cameras,TP-Link,Tapo C520WS,2K QHD 4MP Outdoor Pan/Tilt,189,https://drive.google.com/file/d/1Bwg_xhK7Se4xRcD866Hr5n2aBNoGwN10/view?usp=sharing
+CCTV & Security,Outdoor Cameras,TP-Link,Tapo C530WS,3K 5MP Outdoor Pan/Tilt,219,https://drive.google.com/file/d/1kdFCvptS2wa4EMTwjk1jgCFUbHQLRbgY/view?usp=sharing
+CCTV & Security,Outdoor Cameras,TP-Link,Tapo C560WS,Outdoor Pan/Tilt Security,329,https://drive.google.com/file/d/1JPSjV8F6hbUN9eHyO4bUf8_lkJeoHEdT/view?usp=sharing
+CCTV & Security,Outdoor Cameras,TP-Link,Tapo C575D,Dual 4K Lenses,499,https://drive.google.com/file/d/1FqOG63rMyoQP7cPawRcWNfu1nbA_El8D/view?usp=sharing
+CCTV & Security,Solar / Battery,TP-Link,Tapo C615F Kit,2K 3MP Solar Floodlight Camera Kit,369,https://drive.google.com/file/d/1O7JSA5AP4CPve-H3RIBq3mNViUWTzsLJ/view?usp=sharing
+CCTV & Security,Solar / Battery,TP-Link,Tapo C615G Kit,Solar Powered Pan/Tilt 4G Kit,419,https://drive.google.com/file/d/1lqI3kuCMBl80HdeOWBdZW7Pf6Je7z5jG/view?usp=sharing
+CCTV & Security,Solar / Battery,TP-Link,Tapo C645D Kit,3MP Solar Dual Lens Pan/Tilt Kit,549,https://drive.google.com/file/d/1jOTE4dzYOWZN7YWSiYEFhH_rHNCruZti/view?usp=sharing
+CCTV & Security,Solar / Battery,TP-Link,Tapo C665G Kit,Wi-Fi / 4G Solar Powered,759,https://drive.google.com/file/d/1Pg63qknCLvk8RUceI7lYZBuo9_fKO1Wg/view?usp=sharing
+CCTV & Security,Doorbells,TP-Link,Tapo D235,2K 5MP Video Doorbell Camera,369,https://drive.google.com/file/d/1xSg7VsRxLcxSN_J2hOMovoWyHjwgoaxE/view?usp=sharing
+Smart Home,Hubs & Gateways,TP-Link,Tapo H100,Smart Hub with Chime,89,https://drive.google.com/file/d/1g3S9S9R6YnJZS0GGsoJ_VGFZ1lfpPtSh/view?usp=sharing
+Smart Home,Hubs & Gateways,TP-Link,Tapo H500,Smart Hub with HDD Slot,549,https://drive.google.com/file/d/1kjmyhXbbg1LcWDxjw3h9CxQoitXY7Vjc/view?usp=sharing
+Smart Home,Power & Lighting,TP-Link,Tapo L520E,Smart WiFi Bulb (Dimmable),39,https://drive.google.com/file/d/1ho1uG2nxOjtV6ekOXAad-14g2BAYrZFW/view?usp=sharing
+Smart Home,Power & Lighting,TP-Link,Tapo L530E,Smart WiFi Bulb (Multicolor),45,https://drive.google.com/file/d/1IERoF8DJpJi4i0WqyF2BhS5NJEAp4ft8/view?usp=sharing
+Smart Home,Power & Lighting,TP-Link,Tapo P100,WiFi Socket,39,https://drive.google.com/file/d/1f_6fVOoeABJZvSdfZuK3Mvjf-cPu_v59/view?usp=sharing
+Smart Home,Power & Lighting,TP-Link,Tapo P110M,Mini Smart Wi-Fi Plug,49,https://drive.google.com/file/d/1pvj9GIFgS9U248EFjlO9fuo93KsT2GCS/view?usp=sharing
+Smart Home,Power & Lighting,TP-Link,Tapo P304M,Smart Wi-Fi Power Strip,159,https://drive.google.com/file/d/1f_6fVOoeABJZvSdfZuK3Mvjf-cPu_v59/view?usp=sharing
+Smart Home,Power & Lighting,TP-Link,Tapo S200B,Smart Button,65,https://drive.google.com/file/d/1pa8ZRI5VBWVoCZDBbB61a4br_Guf2NYQ/view?usp=sharing
+Smart Home,Power & Lighting,TP-Link,Tapo S220,Smart Light Switch (2-Gang 1-Way),99,https://drive.google.com/file/d/1jrNIBpZmznR-nJ7XXRIt1wfTAdpkEsma/view?usp=sharing
+Smart Home,Sensors,TP-Link,Tapo T100,Smart Motion Sensor,69,https://drive.google.com/file/d/1SEHlNkVJKSyMR5jCdq5O05aMsiMJI2eE/view?usp=sharing
+Smart Home,Sensors,TP-Link,Tapo T110,Smart Contact Sensor,69,https://drive.google.com/file/d/14lOLDKVLhUyM36SxDkr8_aR6bnJOwUVP/view?usp=sharing
+Smart Home,Sensors,TP-Link,Tapo T300,Smart Water Sensor,79,https://drive.google.com/file/d/165UNXrszQRAGg_9mt6CXoGt_oyff-pxB/view?usp=sharing
+Smart Home,Sensors,TP-Link,Tapo T315,Smart Temp & Humidity Monitor,99,https://drive.google.com/file/d/1TABUr4wbNXE5dFXpVTtfL8eY1AN1akvW/view?usp=sharing`;
+
+export const TAPO_INITIAL_PRODUCTS: Product[] = normalizeSheetRows(parseCsv(TAPO_INVENTORY_CSV));

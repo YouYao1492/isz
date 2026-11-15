@@ -1,0 +1,8 @@
+{
+  "name": "Remix VoltTech Electronics \u0026 Accessories Catalog",
+  "description": "Modern electronics and everyday accessories catalog for physical retail shop. Browse products, check specs, verify availability, and get store directions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
